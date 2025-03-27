@@ -1,12 +1,16 @@
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showInputDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 
+import java.text.DecimalFormat;
+
 public class Util {
 
-    private Bilhete[] bilhete = new Bilhete[5];
+    private Bilhete[] bilhete = new Bilhete[3];
     private int index = 0;
 
     public void menuPrincipal() {
@@ -47,6 +51,37 @@ public class Util {
                     case 1:
                         emitirBilhete();
                         break;
+                    case 2:
+                        listarBilhetes();
+                        break;
+                    case 3:
+                        removerBilhete();
+                        break;
+                }
+            }
+        } while (opcao != 4);
+    }
+
+    private void menuUsario() {
+        int opcao;
+        String menu = "1. Consultar Bilhete\n2. Carregar Bilhete\n3.Passar na Catraca\n4.Sair";
+        do {
+            opcao = parseInt(showInputDialog(menu));
+            if (opcao < 1 || opcao > 4) {
+                showMessageDialog(null, "Opção inválida.");
+            } else {
+                switch (opcao) {
+                    case 1:
+                        consultarSaldo();
+                        break;
+                    case 2:
+                        carregarBilhete();
+                        break;
+                    case 3:
+                        passarCatraca();
+                        break;
+                    default:
+                        break;
                 }
             }
         } while (opcao != 4);
@@ -68,28 +103,16 @@ public class Util {
     }
 
     private void listarBilhetes() {
-
-    }
-
-    private void menuUsario() {
-        int opcao;
-        String menu = "1. Consultar Bilhete\n2. Carregar Bilhete\n3.Passar na Catraca\n4.Sair";
-        do {
-            opcao = parseInt(showInputDialog(menu));
-            if (opcao < 1 || opcao > 4) {
-                showMessageDialog(null, "Opção inválida.");
-            } else {
-                switch (opcao) {
-                    case 1:
-                        consultarSaldo();
-                        break;
-                    case 2:
-                        carregarBilhete();
-                    default:
-                        break;
-                }
-            }
-        } while (opcao != 4);
+        DecimalFormat df = new DecimalFormat("0.00");
+        String aux = "";
+        for (int i = 0; i < index; i++) {
+            aux += "Número do bilhete: " + bilhete[i].id + "\n";
+            aux += "Nome do usuário: " + bilhete[i].usuario.nome + "\n";
+            aux += "Saldo R$ " + df.format(bilhete[i].cadeSaldo()) + "\n";
+            aux += "Tipo de tarifa (perfil): " + bilhete[i].usuario.tipoTarifa + "\n";
+            aux += "------------------------------------------\n";
+        }
+        showMessageDialog(null, aux);
     }
 
     private void carregarBilhete() {
@@ -102,7 +125,22 @@ public class Util {
     }
 
     private void passarCatraca() {
+        int posicao = pesquisar();
+        if (posicao != 1) {
+            bilhete[posicao].passarCatraca();
+        }
+    }
 
+    private void removerBilhete() {
+        int posicao = pesquisar();
+        int resposta;
+        if (posicao != -1) {
+            resposta = showConfirmDialog(null, "Tem certeza que deseja remover?");
+            if (resposta == YES_OPTION) {
+                bilhete[posicao] = bilhete[index - 1];
+                index--;
+            }
+        }
     }
 
     private void consultarSaldo() {
